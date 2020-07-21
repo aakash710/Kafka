@@ -1,2 +1,10 @@
 /.idea/
 /kafka-beginning/.idea/
+/common/.idea/
+/target/
+/kafka-beginning/target/
+/common/target/
+.idea/
+/kafka-beginning/*.iml
+/.idea/
+/common/

@@ -1,5 +1,6 @@
 package kafka.basic;
 
+import kafka.common.ProducerUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -7,11 +8,15 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class ProducerDemoWithKeys {
+public class ProducerDemoWithKeys implements ProducerUtils {
+
+    String bootstrapServer;
 
     public static void main(String[] args) {
         Logger logger = LoggerFactory.getLogger(ProducerDemoWithKeys.class);
@@ -21,11 +26,12 @@ public class ProducerDemoWithKeys {
         String groupId = "my-consumer-application";
         String topic = "first_topic";
 
+        HashMap<String, Optional<String>> propertiesKeysWithValues = new HashMap<>();
+        propertiesKeysWithValues.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, Optional.ofNullable(null));
+        propertiesKeysWithValues.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, Optional.ofNullable(StringSerializer.class.getName()));
+        propertiesKeysWithValues.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, Optional.ofNullable(StringSerializer.class.getName()));
         // create consumer configs
-        Properties properties = new Properties();
-        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        Properties properties = ProducerUtils.producerUtils(propertiesKeysWithValues);
 
         //create a producer
         KafkaProducer<String, String> producer = new KafkaProducer<String, String>(properties);
