@@ -4,6 +4,7 @@
 /target/
 /kafka-beginning/target/
 /common/target/
+/twitter/target/
 /kafka-beginning/*.iml
 /common/*iml
 /.idea/
