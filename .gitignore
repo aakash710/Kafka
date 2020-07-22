@@ -1,10 +1,10 @@
-/.idea/
 /kafka-beginning/.idea/
+/twitter/.idea/
 /common/.idea/
 /target/
 /kafka-beginning/target/
 /common/target/
-.idea/
 /kafka-beginning/*.iml
+/common/*iml
 /.idea/
-/common/
+twitter/*.iml
