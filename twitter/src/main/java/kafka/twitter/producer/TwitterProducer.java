@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -27,12 +28,20 @@ import static kafka.twitter.utils.TwitterConstants.DONALD_TWEETS;
 import static kafka.twitter.utils.TwitterConstants.TERMS;
 
 public class TwitterProducer implements ProducerUtils {
-    private final static String CONSUMER_KEY = "qClUyp1yvFCedyyA7SPe0hljO";
-    private final static String CONSUMER_SECRET = "g0xK05jAwHYMxktXdK43B3N8ihLBiDA6hP0bOZu7DSUbq9bQcf";
-    private final static String TOKEN = "812689340-Phx1R9BVPCjdtQkbVMkF45k26YBoU2uMXWk9H8xq";
-    private final static String TOKEN_SECRET = "gTSkkbaTZB1KXb0nUTRcOeEQzP3H8WxcsjhwYnn2h4uhR";
+    private final static String CONSUMER_KEY = "CONSUMER_KEY";
+    private final static String CONSUMER_SECRET = "CONSUMER_SECRET";
+    private final static String TOKEN = "TOKEN";
+    private final static String TOKEN_SECRET = "TOKEN_SECRET";
     private final static Long FIVE_SECOND_POLL = 5L;
     private static Logger logger = LoggerFactory.getLogger(TwitterProducer.class);
+    private static Properties properties;
+
+    public TwitterProducer() {
+        properties = ProducerUtils.defaultProducerUtils();
+
+        //enable safe properties
+        properties = ProducerUtils.enableSafeProperties(properties);
+    }
 
     public static void main(String[] args) {
         new TwitterProducer().execute();
@@ -49,7 +58,7 @@ public class TwitterProducer implements ProducerUtils {
         client.connect();
 
         //create producer
-        KafkaProducer<String, String> producer = new KafkaProducer<String, String>(ProducerUtils.defaultProducerUtils());
+        KafkaProducer<String, String> producer = new KafkaProducer<String, String>(properties);
 
         // on a different thread, or multiple different threads....
         Integer key = 0;
