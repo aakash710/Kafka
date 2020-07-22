@@ -18,4 +18,12 @@ public interface ProducerUtils {
         return properties;
     }
 
+    static Properties defaultProducerUtils() {
+        Properties properties = new Properties();
+        properties.setProperty(BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
+        properties.setProperty(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.setProperty(VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        return properties;
+    }
+
 }
