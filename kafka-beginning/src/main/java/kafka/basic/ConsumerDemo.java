@@ -1,6 +1,9 @@
 package kafka.basic;
 
+import kafka.common.BaseApplication;
 import kafka.common.ConsumerUtils;
+import kafka.common.PropertyUtils;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -15,26 +18,28 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.Properties;
 
-public class ConsumerDemo {
-    public static void main(String[] args) {
-        Logger logger = LoggerFactory.getLogger(ConsumerDemo.class);
+public class ConsumerDemo extends BaseApplication {
 
+    static HashMap<String, Optional<String>> propertiesKeysWithValues = new HashMap<>();
+    final static Logger logger = LoggerFactory.getLogger(ConsumerDemo.class);
+    String bootstrapServers = "127.0.0.1:9092";
+    final static String groupId = "my-consumer-application";
+    final static String topic = "first_topic";
+    protected static Properties properties;
 
-        String bootstrapServers = "127.0.0.1:9092";
-        String groupId = "my-consumer-application";
-        String topic = "first_topic";
-
-
-        HashMap<String, Optional<String>> propertiesKeysWithValues = new HashMap<>();
-        propertiesKeysWithValues.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, Optional.ofNullable(bootstrapServers));
-        propertiesKeysWithValues.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, Optional.ofNullable(StringDeserializer.class.getName()));
+    public ConsumerDemo() throws ConfigurationException {
+        //constructor used to set resource file paths
+        propertiesKeysWithValues.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, Optional.ofNullable(null));
+        propertiesKeysWithValues.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, Optional.ofNullable(StringDeserializer.class.getName()));//StringDeserializer.class
         propertiesKeysWithValues.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, Optional.ofNullable(StringDeserializer.class.getName()));
         propertiesKeysWithValues.put(ConsumerConfig.GROUP_ID_CONFIG, Optional.ofNullable(groupId));
         propertiesKeysWithValues.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, Optional.ofNullable("earliest"));
-
         // create consumer configs
-        Properties properties = ConsumerUtils.consumerUtils(propertiesKeysWithValues);
+        properties = ConsumerUtils.consumerUtils(propertiesKeysWithValues);
+    }
 
+    @Override
+    public void execute() {
         //create consumer
         KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(properties);
 
@@ -50,7 +55,12 @@ public class ConsumerDemo {
                 logger.info("Partition: " + record.partition() + ", Offset:" + record.offset());
             }
         }
+    }
 
+    public static void main(String[] args) throws ConfigurationException {
+
+        //poll the data
+        new ConsumerDemo().execute();
 
     }
 }
