@@ -17,7 +17,7 @@ public class ConsumerDemo {
 
     static HashMap<String, Optional<String>> propertiesKeysWithValues = new HashMap<>();
     final static Logger logger = LoggerFactory.getLogger(ConsumerDemo.class);
-    String bootstrapServers = "127.0.0.1:9092";
+    final String bootstrapServers = "127.0.0.1:9092";
     final static String groupId = "my-consumer-application";
     final static String topic = "first_topic";
     protected static Properties properties;

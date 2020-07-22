@@ -1,6 +1,5 @@
 package kafka.twitter.producer;
 
-import com.google.common.collect.Lists;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
@@ -10,6 +9,11 @@ import com.twitter.hbc.core.endpoint.StatusesFilterEndpoint;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
+import kafka.common.ProducerUtils;
+import org.apache.kafka.clients.producer.Callback;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +23,14 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class TwitterProducer {
-    private final static String CONSUMER_KEY = "CONSUMER_KEY";
-    private final static String CONSUMER_SECRET = "CONSUMER_SECRET";
-    private final static String TOKEN = "TOKEN";
-    private final static String TOKEN_SECRET = "TOKEN_SECRET";
+import static kafka.twitter.utils.TwitterConstants.DONALD_TWEETS;
+import static kafka.twitter.utils.TwitterConstants.TERMS;
+
+public class TwitterProducer implements ProducerUtils {
+    private final static String CONSUMER_KEY = "qClUyp1yvFCedyyA7SPe0hljO";
+    private final static String CONSUMER_SECRET = "g0xK05jAwHYMxktXdK43B3N8ihLBiDA6hP0bOZu7DSUbq9bQcf";
+    private final static String TOKEN = "812689340-Phx1R9BVPCjdtQkbVMkF45k26YBoU2uMXWk9H8xq";
+    private final static String TOKEN_SECRET = "gTSkkbaTZB1KXb0nUTRcOeEQzP3H8WxcsjhwYnn2h4uhR";
     private final static Long FIVE_SECOND_POLL = 5L;
     private static Logger logger = LoggerFactory.getLogger(TwitterProducer.class);
 
@@ -41,7 +48,11 @@ public class TwitterProducer {
         // Attempts to establish a connection.
         client.connect();
 
+        //create producer
+        KafkaProducer<String, String> producer = new KafkaProducer<String, String>(ProducerUtils.defaultProducerUtils());
+
         // on a different thread, or multiple different threads....
+        Integer key = 0;
         while (!client.isDone()) {
             String msg = null;
             try {
@@ -52,10 +63,27 @@ public class TwitterProducer {
             }
             if (!Objects.equals(msg, null)) {
                 logger.info(msg);
+                producer.send(new ProducerRecord<String, String>(DONALD_TWEETS, Integer.toString(key), msg), new Callback() {
+                    @Override
+                    public void onCompletion(RecordMetadata recordMetadata, Exception e) {
+                        if (!Objects.equals(e, null)) {
+                            logger.error("error message " + e.getMessage() + "\n" + e.getStackTrace());
+                        }
+                    }
+                });
+                key++;
             }
         }
 
-        client.stop();
+        // add a shutdown hook
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.info("stopping application...");
+            logger.info("shutting down client from twitter...");
+            client.stop();
+            logger.info("closing producer...");
+            producer.close();
+            logger.info("done! shutting down");
+        }));
     }
 
     private Client createTwitterClient(BlockingQueue<String> msgQueue) {
@@ -66,7 +94,7 @@ public class TwitterProducer {
         /** Declaring the host  the endpoint, and authentication (basic auth or oauth) */
         Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
         StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
-        List<String> terms = Lists.newArrayList("donald j trump", "donald trump", "Donald Trump");
+        List<String> terms = TERMS;
         hosebirdEndpoint.trackTerms(terms);
 
         // These secrets should be read from a config file
