@@ -29,7 +29,7 @@ import static kafka.twitter.utils.TwitterConstants.TERMS;
 
 public class TwitterProducer implements ProducerUtils {
     private final static String CONSUMER_KEY = "CONSUMER_KEY";
-    private final static String CONSUMER_SECRET = "CONSUMER_SECRET";
+    private final static String CONSUMER_SECRET = "CONSUMER_SECRET"; // get it from https://developer.twitter.com/en/apps
     private final static String TOKEN = "TOKEN";
     private final static String TOKEN_SECRET = "TOKEN_SECRET";
     private final static Long FIVE_SECOND_POLL = 5L;
@@ -40,7 +40,9 @@ public class TwitterProducer implements ProducerUtils {
         properties = ProducerUtils.defaultProducerUtils();
 
         //enable safe properties
-        properties = ProducerUtils.enableSafeProperties(properties);
+        ProducerUtils.enableSafeProperties(properties);
+
+        ProducerUtils.highThroughputProducer(properties);
     }
 
     public static void main(String[] args) {

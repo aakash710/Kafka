@@ -28,14 +28,26 @@ public interface ProducerUtils {
         return properties;
     }
 
-    static Properties enableSafeProperties(Properties properties) {
+    static void enableSafeProperties(Properties properties) {
         //enable safe properties
         properties.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, ENABLE_IDEMPOTENCE_CONFIG_TRUE);
         properties.setProperty(ProducerConfig.ACKS_CONFIG, ACKS_CONFIG_ALL);
         properties.setProperty(ProducerConfig.RETRIES_CONFIG, RETRIES_MAX_INTEGER);
-        return properties;
     }
 
+    static void highThroughputProducer(Properties properties) {
+        // high throughput producer (at the expense of a bit of latency and CPU usage)
+        properties.setProperty(ProducerConfig.COMPRESSION_TYPE_CONFIG, COMPRESSION_TYPE_SNAPPY);
+        properties.setProperty(ProducerConfig.LINGER_MS_CONFIG, LINGER_MS_5);
+        properties.setProperty(ProducerConfig.BATCH_SIZE_CONFIG, BATCH_SIZE_32KB);
+    }
+
+    static Properties perfectDefaultProducer(HashMap<String, Optional<String>> propertiesKeysWithValues) {
+        Properties properties = producerUtils(propertiesKeysWithValues);
+        enableSafeProperties(properties);
+        highThroughputProducer(properties);
+        return properties;
+    }
 
 
 }
