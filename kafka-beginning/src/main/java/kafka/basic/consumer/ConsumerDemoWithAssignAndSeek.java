@@ -1,4 +1,4 @@
-package kafka.basic;
+package kafka.basic.consumer;
 
 import kafka.common.ConsumerUtils;
 import org.apache.commons.configuration.ConfigurationException;
