@@ -28,10 +28,10 @@ import static kafka.twitter.utils.TwitterConstants.DONALD_TWEETS;
 import static kafka.twitter.utils.TwitterConstants.TERMS;
 
 public class TwitterProducer implements ProducerUtils {
-    private final static String CONSUMER_KEY = "tmt7CXxU9XzDhtRetEFK7X2pL";
-    private final static String CONSUMER_SECRET = "5YtS17mGt6Xi2PZw74Yua0ZONixGVz1yH6cksEV2fOnuTEI0i2";
-    private final static String TOKEN = "812689340-r85cGoUT7hlDqSPTZs41U5fzLPigRgyx3KSDUwJ8";
-    private final static String TOKEN_SECRET = "4LhBb6B44cuaUzCTDcojwnHqUfabD14cTZU0Xpc4zsbJU";
+    private final static String CONSUMER_KEY = "CONSUMER_KEY";
+    private final static String CONSUMER_SECRET = "CONSUMER_SECRET";
+    private final static String TOKEN = "TOKEN";
+    private final static String TOKEN_SECRET = "TOKEN_SECRET";
     private final static Long FIVE_SECOND_POLL = 5L;
     private static Logger logger = LoggerFactory.getLogger(TwitterProducer.class);
     private static Properties properties;
